@@ -1,4 +1,87 @@
-Öğrenci No:
-AD-SOYAD:
+Öğrenci No:250541081
+AD-SOYAD:Sami Yusuf Yıldız
 
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+BAŞLA
+
+// 1. Girdi Toplama
+YAZ "Kaç yumurta kullanmak istersiniz? (1-5)"
+AL yumurtaSayisi
+EĞER yumurtaSayisi < 1 VEYA yumurtaSayisi > 5 İSE
+    YAZ "Geçersiz giriş. Varsayılan olarak 2 yumurta kullanılıyor."
+    yumurtaSayisi ← 2
+SON
+
+YAZ "İçine hangi malzemeleri koymak istersiniz? (listeyi virgülle ayırınız, boş bırakmak için Enter'a basın)"
+AL malzemeListesi
+EĞER malzemeListesi BOŞSA
+    malzemeEklenecekMi ← HAYIR
+ELSE
+    malzemeEklenecekMi ← EVET
+SON
+
+YAZ "Omlet nasıl pişsin? (az, orta, iyi)"
+AL pisirmeTercihi
+EĞER pisirmeTercihi GEÇERSİZSE
+    pisirmeTercihi ← "orta"
+SON
+
+// 2. Yumurta Hazırlığı
+YAZ "Yumurtalar kırılıyor..."
+FOR i ← 1 TO yumurtaSayisi
+    Kaseye yumurta kır
+SON
+
+YAZ "Tuz ve istenirse karabiber ekleniyor..."
+YAZ "Yumurtalar çırpılıyor (homojen olana kadar)..."
+
+// 3. Tava ve Yağ Hazırlığı
+YAZ "Tava orta-düşük ateşte ısıtılıyor..."
+YAZ "Tereyağı ekleniyor ve eritiliyor..."
+
+EĞER tereyağı yanarsa (çok kızarırsa)
+    YAZ "Tereyağı yandı, yeniden başlanıyor..."
+    Tereyağını sil, yeni tereyağı ekle
+    TEKRAR ısıt
+SON
+
+// 4. Yumurtayı Dökme ve Karıştırma
+YAZ "Yumurtalar tavaya dökülüyor..."
+YAZ "Spatula ile kenardan ortaya doğru karıştırılıyor..."
+
+REPEAT
+    Karışımın durumu kontrol ediliyor
+UNTIL üst kısmı hafifçe koyulaşır
+
+// 5. Malzeme Ekleme (isteğe bağlı)
+EĞER malzemeEklenecekMi = EVET İSE
+    YAZ "İç malzemeler ekleniyor..."
+    MALZEMELERİ ortasına eşit şekilde yerleştir
+SON
+
+// 6. Katlama
+YAZ "Omlet yarım ay şeklinde katlanıyor..."
+
+EĞER omletin kenarları kırılıyorsa
+    YAZ "Katlama dikkatli yapılmadı. Şekil bozuldu. Sıradaki denemede daha dikkatli ol."
+SON
+
+// 7. Pişirme Süresi Tercihe Göre
+EĞER pisirmeTercihi = "az" İSE
+    YAZ "Kısa süre daha pişiriliyor (içi hafif akışkan kalacak)..."
+ELSE EĞER pisirmeTercihi = "orta" İSE
+    YAZ "Orta süre pişiriliyor (içi hafif nemli)..."
+ELSE
+    YAZ "Biraz daha uzun pişiriliyor (tam pişmiş)..."
+SON
+
+// 8. Tabağa Alma ve Servis
+YAZ "Omlet dikkatlice tabağa alınıyor..."
+YAZ "İsteğe göre üzerine maydanoz veya pul biber serpilebilir."
+YAZ "Yanına ekmek, sebze veya içecek eklenebilir."
+
+// 9. Tamamlandı
+YAZ "Afiyet olsun! Omlet yapımı tamamlandı."
+
+BİTİR
+
