@@ -1,4 +1,71 @@
-Öğrenci No:
-AD-SOYAD:
+Öğrenci No:250541081
+AD-SOYAD:Sami Yusuf Yıldız
 
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+ALGORITMA BasitKartOyunu
+
+
+BAŞLA
+    // 1. Başlangıç ayarları
+    oyuncu_skor ← 0
+    rakip_skor ← 0
+    tur_sayisi ← 5                      // Toplam 5 tur oynanacak
+    deste ← KART_DESTESI_OLUŞTUR()
+    KARISTIR(deste)
+
+    // 2. Oyuncuya ve rakibe kart dağıtma
+    oyuncu_kartlari ← []
+    rakip_kartlari ← []
+
+    DÖNGÜ i ← 1'DEN tur_sayisi'NE KADAR
+        oyuncu_kartlari[ i ] ← KART_CEK(deste)
+        rakip_kartlari[ i ] ← KART_CEK(deste)
+    SON_DÖNGÜ
+
+    // 3. Turların oynanması
+    DÖNGÜ tur ← 1'DEN tur_sayisi'NE KADAR
+        YAZDIR("TUR: ", tur)
+        oyuncu_kart ← oyuncu_kartlari[tur]
+        rakip_kart ← rakip_kartlari[tur]
+
+        // 4. Oyuncunun stratejisi:
+        // Eğer elindeki kart yüksekse direkt oyna, değilse en düşük kartı at
+        EĞER oyuncu_kart > 7 İSE
+            secilen_kart ← oyuncu_kart
+            YAZDIR("Oyuncu yüksek kart oynadı: ", secilen_kart)
+        DEĞİLSE
+            secilen_kart ← ELDEKI_EN_DÜŞÜK_KARTI_AT(oyuncu_kartlari)
+            YAZDIR("Oyuncu düşük kartı feda etti: ", secilen_kart)
+        SON
+
+        // 5. Rakibin kartını göster
+        YAZDIR("Rakip kart oynadı: ", rakip_kart)
+
+        // 6. Tur sonucunu belirle
+        EĞER secilen_kart > rakip_kart İSE
+            oyuncu_skor ← oyuncu_skor + 1
+            YAZDIR("Oyuncu turu kazandı!")
+        DEĞİLSE_EĞER secilen_kart < rakip_kart İSE
+            rakip_skor ← rakip_skor + 1
+            YAZDIR("Rakip turu kazandı!")
+        DEĞİLSE
+            YAZDIR("Berabere!")
+        SON
+
+        // Kullanılan kartları elden çıkar
+        KART_SIL(oyuncu_kartlari, secilen_kart)
+        KART_SIL(rakip_kartlari, rakip_kart)
+    SON_DÖNGÜ
+
+    // 7. Oyunun final sonucu
+    YAZDIR("Final Skoru → Oyuncu: ", oyuncu_skor, " Rakip: ", rakip_skor)
+
+    EĞER oyuncu_skor > rakip_skor İSE
+        YAZDIR("Oyuncu oyunu kazandı! 🎉")
+    DEĞİLSE_EĞER oyuncu_skor < rakip_skor İSE
+        YAZDIR("Rakip oyunu kazandı! 😢")
+    DEĞİLSE
+        YAZDIR("Oyun berabere! 🤝")
+    SON
+
+BİTİR
