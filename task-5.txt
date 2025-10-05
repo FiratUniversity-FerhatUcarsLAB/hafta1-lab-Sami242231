@@ -1,4 +1,109 @@
-Öğrenci No:
-AD-SOYAD:
+Öğrenci No:250541081
+AD-SOYAD:Sami Yusuf Yıldız 
 
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+ALGORİTMA Ideal_Kahve_Demleme
+
+BAŞLA
+    // ---------- Girdiler ----------
+    // kahve_türü: filtre, espresso, pour-over, French press, vb.
+    // su_sıcaklığı: derece C (önerilen: 90-96°C)
+    // öğütme_derecesi: ince, orta, kalın
+    // kahve_miktarı: gram
+    // su_miktarı: ml
+    // demleme_süresi: dakika
+    // su_kalitesi: iyi (filtrelenmiş) / kötü
+    // isteğe bağlı: süt_oranı, şeker_oranı
+
+    kahve_türü ← KULLANICIDAN_AL("Kahve türünü girin (filtre/espresso/french_press/pour_over): ")
+    kahve_miktarı ← KULLANICIDAN_AL("Kahve miktarını gram cinsinden girin: ")
+    su_miktarı ← KULLANICIDAN_AL("Su miktarını ml cinsinden girin: ")
+    su_sıcaklığı ← KULLANICIDAN_AL("Su sıcaklığını °C olarak girin: ")
+    su_kalitesi ← KULLANICIDAN_AL("Su kalitesi (iyi/kötü): ")
+
+    // ---------- 1. Su kontrolü ----------
+    EĞER su_kalitesi == "kötü" İSE
+        YAZDIR("⚠ Su kalitesi düşük, filtrelenmiş su kullanılması önerilir.")
+        su_kalitesi ← "iyi"  // Filtrelenmiş su kullanıldığı varsayıldı
+    SON
+
+    EĞER su_sıcaklığı < 90 VEYA su_sıcaklığı > 96 İSE
+        YAZDIR("⚠ Su sıcaklığı uygun değil. İdeal sıcaklık: 90-96°C")
+        su_sıcaklığı ← 94  // otomatik ideal sıcaklığa ayarla
+    SON
+
+    // ---------- 2. Öğütme derecesi seçimi ----------
+    EĞER kahve_türü == "espresso" İSE
+        öğütme_derecesi ← "ince"
+        demleme_süresi ← 0.5 // dakika
+    YOKSA EĞER kahve_türü == "filtre" VEYA kahve_türü == "pour_over" İSE
+        öğütme_derecesi ← "orta"
+        demleme_süresi ← 3 // dakika
+    YOKSA EĞER kahve_türü == "french_press" İSE
+        öğütme_derecesi ← "kalın"
+        demleme_süresi ← 4 // dakika
+    DEĞİLSE
+        YAZDIR("⚠ Tanınmayan kahve türü, varsayılan filtre kahve seçildi.")
+        kahve_türü ← "filtre"
+        öğütme_derecesi ← "orta"
+        demleme_süresi ← 3
+    SON
+
+    // ---------- 3. Kahve-su oranı kontrolü ----------
+    ideal_oran ← su_miktarı / kahve_miktarı  // ml/g
+    EĞER ideal_oran < 12 VEYA ideal_oran > 18 İSE
+        YAZDIR("⚠ Kahve-su oranı ideal aralıkta değil (12-18 ml/g). Ayarlanıyor...")
+        su_miktarı ← kahve_miktarı * 15 // ideal oranı sabitler
+    SON
+
+    // ---------- 4. Demleme adımları ----------
+    YAZDIR("☕ Kahve demlemeye başlanıyor...")
+
+    // Filtre kağıdı ıslatma
+    EĞER kahve_türü == "filtre" VEYA kahve_türü == "pour_over" İSE
+        YAZDIR("→ Filtre kağıdını sıcak su ile ıslatın.")
+    SON
+
+    YAZDIR("→ Öğütülmüş kahveyi demleme haznesine ekleyin.")
+    YAZDIR("→ Suyu ", su_sıcaklığı, "°C sıcaklıkta dökmeye başlayın.")
+
+    // Su ekleme döngüsü
+    kalan_su ← su_miktarı
+    adım ← 1
+    TEKRAR
+        EĞER kalan_su > 50 İSE
+            eklenen ← 50
+        DEĞİLSE
+            eklenen ← kalan_su
+        SON
+        kalan_su ← kalan_su - eklenen
+        YAZDIR("→ Adım ", adım, ": ", eklenen, " ml sıcak su döküldü.")
+        adım ← adım + 1
+    KALAN_Su > 0 OLDUĞU SÜRECE
+
+    // Demleme süresi boyunca bekleme
+    sayaç ← demleme_süresi
+    TEKRAR
+        YAZDIR("⏳ Demleniyor... kalan süre: ", sayaç, " dakika.")
+        sayaç ← sayaç - 1
+        BEKLE(1 dakika)
+    sayaç > 0 OLDUĞU SÜRECE
+
+    YAZDIR("✅ Demleme tamamlandı! Kahve hazır.")
+
+    // ---------- 5. İsteğe bağlı ekler ----------
+    süt_ekle ← KULLANICIDAN_AL("Süt eklemek ister misiniz? (E/H): ")
+    EĞER süt_ekle == "E" İSE
+        süt_oranı ← KULLANICIDAN_AL("Süt miktarını ml cinsinden girin: ")
+        YAZDIR("→ ", süt_oranı, " ml süt eklendi.")
+    SON
+
+    şeker_ekle ← KULLANICIDAN_AL("Şeker eklemek ister misiniz? (E/H): ")
+    EĞER şeker_ekle == "E" İSE
+        şeker_oranı ← KULLANICIDAN_AL("Şeker miktarını çay kaşığı cinsinden girin: ")
+        YAZDIR("→ ", şeker_oranı, " çay kaşığı şeker eklendi.")
+    SON
+
+    YAZDIR("☕ Afiyet olsun! İdeal kahveniz hazır.")
+
+BİTİR
