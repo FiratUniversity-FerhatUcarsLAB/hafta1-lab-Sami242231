@@ -1,4 +1,73 @@
-Öğrenci No:
-AD-SOYAD:
+Öğrenci No:250541081
+AD-SOYAD:Sami Yusuf Yıldız 
 
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+ALGORITMA KutuphaneKitapAramaSistemi
+
+BAŞLA
+    // 1. Kitap veritabanı (örnek)
+    kitap_listesi ← [
+        {ISBN:"001", ad:"Nutuk", yazar:"Mustafa Kemal Atatürk", kategori:"Tarih", raf_no:"A12", mevcut_mu:TRUE},
+        {ISBN:"002", ad:"Suç ve Ceza", yazar:"Fyodor Dostoyevski", kategori:"Roman", raf_no:"B03", mevcut_mu:FALSE},
+        {ISBN:"003", ad:"Simyacı", yazar:"Paulo Coelho", kategori:"Roman", raf_no:"B05", mevcut_mu:TRUE},
+        {ISBN:"004", ad:"Hayvan Çiftliği", yazar:"George Orwell", kategori:"Roman", raf_no:"B07", mevcut_mu:TRUE}
+    ]
+
+    TEKRAR
+        YAZDIR("=== KÜTÜPHANE KİTAP ARAMA SİSTEMİ ===")
+        YAZDIR("Arama kriterini seçin:")
+        YAZDIR("1 - Kitap Adı")
+        YAZDIR("2 - Yazar")
+        YAZDIR("3 - Kategori")
+        YAZDIR("4 - ISBN")
+
+        kriter_seçim ← KULLANICI_GİRİŞ()
+
+        // Geçersiz seçim kontrolü
+        EĞER kriter_seçim == 1 THEN
+            arama_kriteri ← "ad"
+        EĞER kriter_seçim == 2 THEN
+            arama_kriteri ← "yazar"
+        EĞER kriter_seçim == 3 THEN
+            arama_kriteri ← "kategori"
+        EĞER kriter_seçim == 4 THEN
+            arama_kriteri ← "ISBN"
+        DEĞİLSE
+            YAZDIR("⚠ Hatalı seçim yaptınız. Lütfen tekrar deneyin.")
+            DEVAM_ET // döngünün başına dön
+        ENDIF
+
+        YAZDIR("Aramak istediğiniz ", arama_kriteri, " bilgisini girin:")
+        arama_degeri ← KULLANICI_GİRİŞ()
+
+        bulunan_kitaplar ← []
+
+        // Liste üzerinde arama döngüsü
+        FOR her_kitap IN kitap_listesi DO
+            EĞER ToLowerCase(her_kitap[arama_kriteri]) İÇERİR ToLowerCase(arama_degeri) THEN
+                EKLE(bulunan_kitaplar, her_kitap)
+            ENDIF
+        ENDFOR
+
+        // Sonuç kontrolü
+        EĞER UZUNLUK(bulunan_kitaplar) == 0 THEN
+            YAZDIR("❌ Aradığınız kriterlere uygun kitap bulunamadı.")
+        DEĞİLSE
+            YAZDIR("✅ Bulunan Kitaplar:")
+            FOR kitap IN bulunan_kitaplar DO
+                YAZDIR("• ", kitap.ad, " | ", kitap.yazar, " | Kategori: ", kitap.kategori)
+                EĞER kitap.mevcut_mu == TRUE THEN
+                    YAZDIR("   → Raf Numarası: ", kitap.raf_no)
+                DEĞİLSE
+                    YAZDIR("   → Şu anda ödünç alınmış.")
+                ENDIF
+            ENDFOR
+        ENDIF
+
+        YAZDIR("Başka bir kitap aramak ister misiniz? (E/H)")
+        cevap ← KULLANICI_GİRİŞ()
+
+    WHILE cevap == "E" VEYA cevap == "e"
+
+    YAZDIR("📚 Sistemden çıkılıyor. İyi günler!")
+BİTİR
