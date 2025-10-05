@@ -1,4 +1,157 @@
-Öğrenci No:
-AD-SOYAD:
+Öğrenci No:250541081
+AD-SOYAD:Sami Yusuf Yıldız
 
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+ALGORİTMA Lego_İle_Şekil_Yapma_Plani
+
+BAŞLA
+    // ---------- Girdi ----------
+    // hedef_sekil: kullanıcı tarafından tanımlanan şekil (ör: "kale", 2B görsel, 3B model, geometrik parametreler)
+    // tip: "2B" veya "3B"
+    // ölçek: şeklin boyut çarpanı (1 = normal, 2 = iki kat büyük vb.)
+    // renk_tercihleri: kullanılacak öncelikli renkler
+    // max_parca_türü: isteğe bağlı olarak kullanılacak parça türü sınırı
+    // envanter: [{tip, boyut, renk, adet}, ...]  // mevcut LEGO parçaları
+    // stabilite_esigi: (0..1) arası güvenlik toleransı
+
+    GİRDİLER ← KULLANICIDAN_AL(hedef_sekil, tip, ölçek, renk_tercihleri, max_parca_türü, envanter, stabilite_esigi)
+
+    // ---------- 1. Şekli çözümle ----------
+    FONKSİYON Sekli_Cozumle(girdi):
+        EĞER girdi.hedef_sekil BİR 3B_MODEL_DOSYASI İSE
+            model ← 3B_MODELI_YUKLE(girdi.hedef_sekil)
+            voxel_model ← VOXEL_DÖNÜŞTÜR(model, çözünürlük=ÖLÇEK_HESAPLA(girdi.ölçek))
+        YOKSA EĞER girdi.hedef_sekil BİR RESİM İSE
+            siluet ← SİLUET_ÇIKAR(girdi.hedef_sekil)
+            voxel_model ← RESİMDEN_VOXEL_OLUŞTUR(siluet, yükseklik=YÜKSEKLİK_TAHMİN(girdi.ölçek))
+        YOKSA EĞER girdi.hedef_sekil GEOMETRİK_PARAMETRELER İSE
+            voxel_model ← GEOMETRİK_MODEL_OLUŞTUR(girdi.hedef_sekil, girdi.ölçek)
+        DEĞİLSE
+            HATA_VER("Geçersiz şekil girdisi!")
+        SON
+        DÖNDÜR voxel_model
+    SON
+
+    voxel_model ← Sekli_Cozumle(GİRDİLER)
+
+    // ---------- 2. Parça planı çıkar ----------
+    FONKSİYON Voxel_Den_Parca_Plani(voxel_model, envanter, renk_tercihleri, max_parca_türü):
+        gerekli_parcalar ← []
+        uygun_parcalar ← EN_BÜYÜKTEN_KÜÇÜĞE_SIRALA(envanter, max_parca_türü)
+
+        HER katman İÇİN alt_kattan_üste DO
+            kalan_voxeller ← KATMAN_VOXELLERINI_AL(voxel_model, katman)
+            TEKRAR
+                yerleştirildi ← YANLIŞ
+                HER parca IN uygun_parcalar DO
+                    konum ← UYGUN_YER_BUL(kalan_voxeller, parca)
+                    EĞER konum VARSA
+                        renk ← RENK_SEC(parca, renk_tercihleri, envanter)
+                        PARÇA_EKLE(gerekli_parcalar, parca, renk, konum)
+                        VOXEL_SİL(kalan_voxeller, konum.kaplanan_voxeller)
+                        yerleştirildi ← DOĞRU
+                        ÇIK
+                    SON
+                SON
+                EĞER yerleştirildi == YANLIŞ İSE
+                    küçük_parca ← EN_KÜÇÜK_PARCAYI_AL(uygun_parcalar)
+                    EĞER küçük_parca YOKSA
+                        DÖNDÜR {gerekli_parcalar, eksik=DOĞRU}
+                    SON
+                    konum ← UYGUN_YER_BUL(kalan_voxeller, küçük_parca)
+                    EĞER konum VARSA
+                        renk ← RENK_SEC(küçük_parca, renk_tercihleri, envanter)
+                        PARÇA_EKLE(gerekli_parcalar, küçük_parca, renk, konum)
+                        VOXEL_SİL(kalan_voxeller, konum.kaplanan_voxeller)
+                    DEĞİLSE
+                        BİR_VOXEL_BOŞ_BIRAK(kalan_voxeller)
+                    SON
+                SON
+            KALAN_VOXELLER_BOŞ_OLMAYANA_KADAR
+        SON
+        DÖNDÜR {gerekli_parcalar, eksik=YANLIŞ}
+    SON
+
+    plan_sonucu ← Voxel_Den_Parca_Plani(voxel_model, GİRDİLER.envanter, GİRDİLER.renk_tercihleri, GİRDİLER.max_parca_türü)
+    gerekli_parcalar ← plan_sonucu.gerekli_parcalar
+
+    // ---------- 3. Envanter kontrolü ----------
+    FONKSİYON Envanter_Kontrol_ve_Ikame(gerekli_parcalar, envanter):
+        eksik ← []
+        ikameler ← []
+        HER parca IN gerekli_parcalar DO
+            stok ← ENVANTER_ADET(envanter, parca.tip, parca.boyut, parca.renk)
+            EĞER stok >= parca.adet İSE
+                DEVAM_ET
+            DEĞİLSE
+                eksik_adet ← parca.adet - stok
+                alt_renk ← RENKTE_İKAME_BUL(envanter, parca)
+                EĞER alt_renk VARSA
+                    İKAME_EKLE(ikameler, parca, alt_renk, eksik_adet)
+                DEĞİLSE
+                    alt_boyut ← BOYUTTA_İKAME_BUL(envanter, parca)
+                    EĞER alt_boyut VARSA
+                        İKAME_EKLE(ikameler, parca, alt_boyut, eksik_adet)
+                    DEĞİLSE
+                        EKLE(eksik, {parca, eksik_adet})
+                    SON
+                SON
+            SON
+        SON
+        DÖNDÜR {eksik, ikameler}
+    SON
+
+    stok_durumu ← Envanter_Kontrol_ve_Ikame(gerekli_parcalar, GİRDİLER.envanter)
+    eksik ← stok_durumu.eksik
+    ikameler ← stok_durumu.ikameler
+
+    EĞER eksik BOŞ_DEĞİLSE
+        YAZDIR("Bazı parçalar eksik. Satın alma veya ikame gerekir.")
+    SON
+
+    // ---------- 4. Yapım adımları oluştur ----------
+    FONKSİYON Yapim_Adimlari_Uret(gerekli_parcalar, voxel_model):
+        adimlar ← []
+        katmanlar ← KATLARI_AL(voxel_model)
+        HER katman IN katmanlar DO
+            katman_parcalari ← KATMANDAN_FILTRELE(gerekli_parcalar, katman)
+            gruplar ← YAKINLIK_VE_TİPE_GÖRE_GRUPLA(katman_parcalari)
+            HER grup IN gruplar DO
+                EKLE(adimlar, {islem:"yerleştir_grup", grup:grup, katman:katman})
+            SON
+            EKLE(adimlar, {islem:"stabilite_kontrol", katman:katman})
+        SON
+        DÖNDÜR adimlar
+    SON
+
+    adimlar ← Yapim_Adimlari_Uret(gerekli_parcalar, voxel_model)
+
+    // ---------- 5. Montaj ----------
+    FONKSİYON Montaj_Yap(adimlar, envanter):
+        i ← 0
+        WHILE i < UZUNLUK(adimlar) DO
+            adim ← adimlar[i]
+            EĞER adim.islem == "yerleştir_grup" İSE
+                HER parca IN adim.grup DO
+                    EĞER ENVANTERDEN_DÜŞ(parca, envanter) == YANLIŞ İSE
+                        UYAR("Parça stokta yok!")
+                    SON
+                    YAZDIR("Parçayı yerleştir: ", parca, " katman: ", adim.katman)
+                SON
+            EĞER adim.islem == "stabilite_kontrol" İSE
+                YAZDIR("Katman ", adim.katman, " tamamlandı. Stabilite kontrol edin.")
+            SON
+            i ← i + 1
+        SON
+        YAZDIR("Tüm montaj tamamlandı!")
+    SON
+
+    Montaj_Yap(adimlar, GİRDİLER.envanter)
+
+    // ---------- 6. Rapor ----------
+    YAZDIR("Toplam parça sayısı: ", TOPLAM_ADET(gerekli_parcalar))
+    YAZDIR("Kullanılan ikameler: ", ikameler)
+    YAZDIR("Eksik parçalar: ", eksik)
+    YAZDIR("İşlem tamamlandı.")
+
+BİTİR
