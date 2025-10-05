@@ -2,86 +2,78 @@
 AD-SOYAD:Sami Yusuf Yıldız
 
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+
+ALGORITMA MukemmelOmletYap
+
 BAŞLA
+    // 1. Gerekli malzemeleri tanımla
+    yumurta_sayisi ← KULLANICIDAN_AL("Kaç yumurta kullanacaksınız?")
+    süt_miktari ← 30 ml        // opsiyonel
+    tuz_miktari ← 1 çay kaşığı
+    karabiber_miktari ← 1 çay kaşığı
+    tereyağı_miktari ← 1 yemek kaşığı
+    tava_sıcaklığı ← 0
+    pişirme_süresi ← 3 dakika
 
-// 1. Girdi Toplama
-YAZ "Kaç yumurta kullanmak istersiniz? (1-5)"
-AL yumurtaSayisi
-EĞER yumurtaSayisi < 1 VEYA yumurtaSayisi > 5 İSE
-    YAZ "Geçersiz giriş. Varsayılan olarak 2 yumurta kullanılıyor."
-    yumurtaSayisi ← 2
-SON
+    // 2. Yumurta sayısı kontrolü
+    EĞER yumurta_sayisi < 2 İSE
+        YAZDIR("Omlet için en az 2 yumurta gerekir.")
+        yumurta_sayisi ← 2
+    SON
 
-YAZ "İçine hangi malzemeleri koymak istersiniz? (listeyi virgülle ayırınız, boş bırakmak için Enter'a basın)"
-AL malzemeListesi
-EĞER malzemeListesi BOŞSA
-    malzemeEklenecekMi ← HAYIR
-ELSE
-    malzemeEklenecekMi ← EVET
-SON
+    // 3. Yumurtaları kır ve kaseye ekle
+    KARISIM ← BOŞ_KASE_OLUŞTUR()
+    DÖNGÜ i ← 1'DEN yumurta_sayisi'NE KADAR
+        YUMURTA_KIR()
+        KARISIMA_EKLE("yumurta")
+    SON_DÖNGÜ
 
-YAZ "Omlet nasıl pişsin? (az, orta, iyi)"
-AL pisirmeTercihi
-EĞER pisirmeTercihi GEÇERSİZSE
-    pisirmeTercihi ← "orta"
-SON
+    // 4. Opsiyonel süt ekleme
+    EĞER süt_miktari > 0 İSE
+        KARISIMA_EKLE(süt_miktari)
+    SON
 
-// 2. Yumurta Hazırlığı
-YAZ "Yumurtalar kırılıyor..."
-FOR i ← 1 TO yumurtaSayisi
-    Kaseye yumurta kır
-SON
+    // 5. Baharat ekleme
+    KARISIMA_EKLE(tuz_miktari)
+    KARISIMA_EKLE(karabiber_miktari)
 
-YAZ "Tuz ve istenirse karabiber ekleniyor..."
-YAZ "Yumurtalar çırpılıyor (homojen olana kadar)..."
+    // 6. Karışımı homojen hale gelene kadar çırp
+    karışım_homojen ← FALSE
+    WHILE karışım_homojen = FALSE
+        ÇIRP(KARISIM)
+        EĞER HOMOJEN_KONTROL(KARISIM) = TRUE İSE
+            karışım_homojen ← TRUE
+        SON
+    SON_WHILE
 
-// 3. Tava ve Yağ Hazırlığı
-YAZ "Tava orta-düşük ateşte ısıtılıyor..."
-YAZ "Tereyağı ekleniyor ve eritiliyor..."
+    // 7. Tavayı ısıt
+    TAVAYI_OCAĞA_KOY()
+    ATEŞI_AYARLA("orta")
+    TAVAYA_EKLE(tereyağı_miktari)
 
-EĞER tereyağı yanarsa (çok kızarırsa)
-    YAZ "Tereyağı yandı, yeniden başlanıyor..."
-    Tereyağını sil, yeni tereyağı ekle
-    TEKRAR ısıt
-SON
+    WHILE tava_sıcaklığı < 160°C
+        tava_sıcaklığı ← SICAKLIK_ÖLÇ()
+    SON_WHILE
+    YAZDIR("Tava hazır, karışımı dökebilirsiniz.")
 
-// 4. Yumurtayı Dökme ve Karıştırma
-YAZ "Yumurtalar tavaya dökülüyor..."
-YAZ "Spatula ile kenardan ortaya doğru karıştırılıyor..."
+    // 8. Karışımı tavaya dök
+    TAVAYA_DÖK(KARISIM)
 
-REPEAT
-    Karışımın durumu kontrol ediliyor
-UNTIL üst kısmı hafifçe koyulaşır
+    // 9. Pişirme süreci
+    pişirme_başlangıç ← ZAMAN_ŞİMDİ()
+    WHILE GECEN_SÜRE(pişirme_başlangıç) < pişirme_süresi
+        EĞER KENARLAR_PIŞTİ_MI() = TRUE VE ORTA_KISIM_SIVI() = TRUE İSE
+            SPATULA_İLE_KENARLARI_KALDIR()
+        SON
+    SON_WHILE
 
-// 5. Malzeme Ekleme (isteğe bağlı)
-EĞER malzemeEklenecekMi = EVET İSE
-    YAZ "İç malzemeler ekleniyor..."
-    MALZEMELERİ ortasına eşit şekilde yerleştir
-SON
-
-// 6. Katlama
-YAZ "Omlet yarım ay şeklinde katlanıyor..."
-
-EĞER omletin kenarları kırılıyorsa
-    YAZ "Katlama dikkatli yapılmadı. Şekil bozuldu. Sıradaki denemede daha dikkatli ol."
-SON
-
-// 7. Pişirme Süresi Tercihe Göre
-EĞER pisirmeTercihi = "az" İSE
-    YAZ "Kısa süre daha pişiriliyor (içi hafif akışkan kalacak)..."
-ELSE EĞER pisirmeTercihi = "orta" İSE
-    YAZ "Orta süre pişiriliyor (içi hafif nemli)..."
-ELSE
-    YAZ "Biraz daha uzun pişiriliyor (tam pişmiş)..."
-SON
-
-// 8. Tabağa Alma ve Servis
-YAZ "Omlet dikkatlice tabağa alınıyor..."
-YAZ "İsteğe göre üzerine maydanoz veya pul biber serpilebilir."
-YAZ "Yanına ekmek, sebze veya içecek eklenebilir."
-
-// 9. Tamamlandı
-YAZ "Afiyet olsun! Omlet yapımı tamamlandı."
+    // 10. Katlama ve son kontrol
+    EĞER OMLET_HAZIR_MI() = TRUE İSE
+        OMLETİ_KATLA()
+        YAZDIR("Omletiniz hazır! Afiyet olsun.")
+    DEĞİLSE
+        YAZDIR("Omlet tam pişmedi, biraz daha bekletin.")
+    SON
 
 BİTİR
 
